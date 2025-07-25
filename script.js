@@ -4,7 +4,7 @@ const scoreElement = document.getElementById('score');
 const startBtn = document.getElementById('start-btn');
 const resetBtn = document.getElementById('reset-btn');
 
-// Размер клетки
+// Настройки игры
 const gridSize = 20;
 const tileCount = canvas.width / gridSize;
 
@@ -23,7 +23,7 @@ function createFood() {
     y: Math.floor(Math.random() * tileCount) * gridSize
   };
   
-  // Убедимся, что еда не появляется на змейке
+  // Проверяем, чтобы еда не появилась на змейке
   while (snake.some(segment => segment.x === food.x && segment.y === food.y)) {
     food = {
       x: Math.floor(Math.random() * tileCount) * gridSize,
@@ -117,57 +117,30 @@ function update() {
   }
 }
 
-// Улучшенное управление (стрелки + WASD) с учетом регистра и раскладки
+// Управление (стрелки + WASD в любой раскладке)
 document.addEventListener('keydown', e => {
   if (!isGameRunning) return;
 
-  // Нормализуем код клавиши
-  const key = e.key.toLowerCase();
-  const code = e.code.toLowerCase();
-
-  // Вверх (стрелка вверх или W или Ц в русской раскладке)
-  if ((key === 'arrowup' || code === 'keyw' || key === 'ц') && dy !== gridSize) {
+  // Используем code для независимости от раскладки
+  const code = e.code;
+  
+  // Вверх (стрелка вверх или W в любой раскладке)
+  if ((code === 'ArrowUp' || code === 'KeyW') && dy !== gridSize) {
     dx = 0;
     dy = -gridSize;
   }
-  // Вниз (стрелка вниз или S или Ы в русской раскладке)
-  else if ((key === 'arrowdown' || code === 'keys' || key === 'ы') && dy !== -gridSize) {
+  // Вниз (стрелка вниз или S в любой раскладке)
+  else if ((code === 'ArrowDown' || code === 'KeyS') && dy !== -gridSize) {
     dx = 0;
     dy = gridSize;
   }
-  // Влево (стрелка влево или A или Ф в русской раскладке)
-  else if ((key === 'arrowleft' || code === 'keya' || key === 'ф') && dx !== gridSize) {
+  // Влево (стрелка влево или A в любой раскладке)
+  else if ((code === 'ArrowLeft' || code === 'KeyA') && dx !== gridSize) {
     dx = -gridSize;
     dy = 0;
   }
-  // Вправо (стрелка вправо или D или В в русской раскладке)
-  else if ((key === 'arrowright' || code === 'keyd' || key === 'в') && dx !== -gridSize) {
-    dx = gridSize;
-    dy = 0;
-  }
-});
-
-// Управление для мобильных устройств
-document.querySelector('.up').addEventListener('click', () => {
-  if (isGameRunning && dy !== gridSize) {
-    dx = 0;
-    dy = -gridSize;
-  }
-});
-document.querySelector('.down').addEventListener('click', () => {
-  if (isGameRunning && dy !== -gridSize) {
-    dx = 0;
-    dy = gridSize;
-  }
-});
-document.querySelector('.left').addEventListener('click', () => {
-  if (isGameRunning && dx !== gridSize) {
-    dx = -gridSize;
-    dy = 0;
-  }
-});
-document.querySelector('.right').addEventListener('click', () => {
-  if (isGameRunning && dx !== -gridSize) {
+  // Вправо (стрелка вправо или D в любой раскладке)
+  else if ((code === 'ArrowRight' || code === 'KeyD') && dx !== -gridSize) {
     dx = gridSize;
     dy = 0;
   }

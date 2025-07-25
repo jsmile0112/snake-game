@@ -4,11 +4,11 @@ const scoreElement = document.getElementById('score');
 const startBtn = document.getElementById('start-btn');
 const resetBtn = document.getElementById('reset-btn');
 
-// Размер клетки (можно менять)
+// Размер клетки
 const gridSize = 20;
 const tileCount = canvas.width / gridSize;
 
-let snake = [{ x: 300, y: 300 }]; // Стартовая позиция по центру
+let snake = [{ x: 300, y: 300 }];
 let food = { x: 0, y: 0 };
 let dx = gridSize;
 let dy = 0;
@@ -22,6 +22,14 @@ function createFood() {
     x: Math.floor(Math.random() * tileCount) * gridSize,
     y: Math.floor(Math.random() * tileCount) * gridSize
   };
+  
+  // Убедимся, что еда не появляется на змейке
+  while (snake.some(segment => segment.x === food.x && segment.y === food.y)) {
+    food = {
+      x: Math.floor(Math.random() * tileCount) * gridSize,
+      y: Math.floor(Math.random() * tileCount) * gridSize
+    };
+  }
 }
 
 // Рисуем глаза на голове змейки
@@ -48,16 +56,16 @@ function drawEyes(x, y) {
 
   // Зрачки
   ctx.fillStyle = 'black';
-  if (dx === gridSize) { // Вправо
+  if (dx === gridSize) {
     ctx.fillRect(x + 14, y + 6, pupilSize, pupilSize);
     ctx.fillRect(x + 14, y + 14, pupilSize, pupilSize);
-  } else if (dx === -gridSize) { // Влево
+  } else if (dx === -gridSize) {
     ctx.fillRect(x + 4, y + 6, pupilSize, pupilSize);
     ctx.fillRect(x + 4, y + 14, pupilSize, pupilSize);
-  } else if (dy === -gridSize) { // Вверх
+  } else if (dy === -gridSize) {
     ctx.fillRect(x + 6, y + 4, pupilSize, pupilSize);
     ctx.fillRect(x + 14, y + 4, pupilSize, pupilSize);
-  } else if (dy === gridSize) { // Вниз
+  } else if (dy === gridSize) {
     ctx.fillRect(x + 6, y + 14, pupilSize, pupilSize);
     ctx.fillRect(x + 14, y + 14, pupilSize, pupilSize);
   }
@@ -69,7 +77,7 @@ function draw() {
 
   // Рисуем змейку
   snake.forEach((segment, index) => {
-    ctx.fillStyle = index === 0 ? '#2E8B57' : '#4CAF50'; // Голова темнее
+    ctx.fillStyle = index === 0 ? '#2E8B57' : '#4CAF50';
     ctx.fillRect(segment.x, segment.y, gridSize, gridSize);
     ctx.strokeStyle = '#45a049';
     ctx.strokeRect(segment.x, segment.y, gridSize, gridSize);
@@ -109,29 +117,57 @@ function update() {
   }
 }
 
-// Управление (стрелки + WASD)
+// Улучшенное управление (стрелки + WASD) с учетом регистра и раскладки
 document.addEventListener('keydown', e => {
   if (!isGameRunning) return;
 
+  // Нормализуем код клавиши
   const key = e.key.toLowerCase();
-  
-  // Вверх (стрелка вверх или W)
-  if ((key === 'arrowup' || key === 'w') && dy !== gridSize) {
+  const code = e.code.toLowerCase();
+
+  // Вверх (стрелка вверх или W или Ц в русской раскладке)
+  if ((key === 'arrowup' || code === 'keyw' || key === 'ц') && dy !== gridSize) {
     dx = 0;
     dy = -gridSize;
   }
-  // Вниз (стрелка вниз или S)
-  else if ((key === 'arrowdown' || key === 's') && dy !== -gridSize) {
+  // Вниз (стрелка вниз или S или Ы в русской раскладке)
+  else if ((key === 'arrowdown' || code === 'keys' || key === 'ы') && dy !== -gridSize) {
     dx = 0;
     dy = gridSize;
   }
-  // Влево (стрелка влево или A)
-  else if ((key === 'arrowleft' || key === 'a') && dx !== gridSize) {
+  // Влево (стрелка влево или A или Ф в русской раскладке)
+  else if ((key === 'arrowleft' || code === 'keya' || key === 'ф') && dx !== gridSize) {
     dx = -gridSize;
     dy = 0;
   }
-  // Вправо (стрелка вправо или D)
-  else if ((key === 'arrowright' || key === 'd') && dx !== -gridSize) {
+  // Вправо (стрелка вправо или D или В в русской раскладке)
+  else if ((key === 'arrowright' || code === 'keyd' || key === 'в') && dx !== -gridSize) {
+    dx = gridSize;
+    dy = 0;
+  }
+});
+
+// Управление для мобильных устройств
+document.querySelector('.up').addEventListener('click', () => {
+  if (isGameRunning && dy !== gridSize) {
+    dx = 0;
+    dy = -gridSize;
+  }
+});
+document.querySelector('.down').addEventListener('click', () => {
+  if (isGameRunning && dy !== -gridSize) {
+    dx = 0;
+    dy = gridSize;
+  }
+});
+document.querySelector('.left').addEventListener('click', () => {
+  if (isGameRunning && dx !== gridSize) {
+    dx = -gridSize;
+    dy = 0;
+  }
+});
+document.querySelector('.right').addEventListener('click', () => {
+  if (isGameRunning && dx !== -gridSize) {
     dx = gridSize;
     dy = 0;
   }
